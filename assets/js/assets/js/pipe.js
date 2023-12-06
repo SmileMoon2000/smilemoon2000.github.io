@@ -31,7 +31,9 @@ function reset() {
     $("input#velocity").val(0.3);
     $("input#outerdiameter").val(0.5);
     $("input#submergedweight").val(3);
-
+    $("input#friction_coefficient").val("");
+    $("input#safety_factor").val("");
+    $("input#lateral_displacement").val("");
     $("input#weightOption").click(); //prop('checked', true);
     $("input#absoluteOption").click(); //prop('checked', true);
     // $("input#weightOption").prop('checked', true);
