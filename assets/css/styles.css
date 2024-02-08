@@ -1,0 +1,79 @@
+.card-img-top {
+  height: 35vw;
+  width: 100%;
+  object-fit: cover;
+}
+
+.input-group-prepend {
+  width: 30%;
+  text-align: left;
+}
+
+.input-group-text {
+  width: 100%;
+}
+
+.input-group-append {
+  width: 20%;
+  text-align: left;
+}
+
+button.btn {
+  width: 40%;
+}
+
+.card {
+  /*height: 100%;*/
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+fieldset {
+  border: dotted;
+  border-width: thin;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+legend {
+  font-size: 19px;
+}
+
+.card-data {
+  height: 50%;
+}
+
+.card-output {
+  /*height: 30%;*/
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.input-group-text {
+  /* background-color: #aba8b1; */
+  /* font-style:oblique; */
+
+}
+.form-check-label{
+  /* font-style:oblique; */
+}
+
+tr th {
+  vertical-align: middle;
+  height: 20px;
+}
+
+.container-wide{
+  margin-left:10px;
+  margin-right:10px;
+}
+
+.input-group-prepend{
+  min-width: 50%;
+}
+
+/* @media screen and (max-width: 1280px){
+  #sidebar .toggle {
+
+  }
+} */

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>海底管道稳定性分析</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700">
+    <link rel="stylesheet" href="assets/css/FontAwesome.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="assets/css/assets/css/templatemo-style.css">
+    <link rel="stylesheet" href="assets/css/assets/css/owl.css">
+    <link rel="stylesheet" href="assets/css/Footer-Basic-icons.css">
+</head>
+
+<body class="is-preload" onload="reset()">
+    <div id="wrapper">
+        <div id="main">
+            <div class="inner">
+                <header id="header">
+                    <!-- $.load -->
+                </header>
+                <div id="main-content">
+                    <section class="main-banner" style="padding-bottom:46px;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card card-input">
+                                        <h3 style="font-weight: bold;">参数输入</h3>
+                                        <fieldset>
+                                            <legend style="width: 80px;font-weight: bold;">计算类别</legend>
+                                            <div class="form-check form-check-inline" style="display:block;"><input
+                                                    type="radio" class="form-check-input" id="weightOption"
+                                                    name="Task" value="weightOption"><label
+                                                    class="form-check-label" for="weightOption"> 评估所需的管道重量</label>
+                                            </div>
+                                            <div class="form-check form-check-inline" style="display:block;"><input
+                                                    type="radio" class="form-check-input" id="stabilityOption"
+                                                    name="Task" value="stabilityOption"><label
+                                                    class="form-check-label" for="stabilityOption"> 检查稳定性/计算位移
+                                                </label></div>
+                                        </fieldset>
+                                        <h4>输入计算参数</h4>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">水深</span>
+                                            </div><input class="form-control" type="number" id="waterdepth"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span
+                                                    class="input-group-text input-group-text">m</span></div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">显著波高</span>
+                                            </div><input class="form-control" type="number" id="waveheight"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">m</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">高峰时段</span>
+                                            </div><input class="form-control" type="number" id="timeperiod" max="Infinity"
+                                                min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">s</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">稳态流速</span>
+                                            </div><input class="form-control" type="number" id="velocity" max="Infinity"
+                                                min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">m/s</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">管道外径</span>
+                                            </div><input class="form-control" type="number" id="outerdiameter"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">m</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated stability_specific" id=" submergedweight">
+                                            <div class="input-group-prepend"><span class="input-group-text">管道浮重</span>
+                                            </div><input class="form-control" type="number" id="submergedweight" max="Infinity"
+                                                min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">kN/m</span>
+                                            </div>
+                                        </div>
+                                        <fieldset>
+                                            <legend style="width: 150px;font-weight: bold;">选择稳定性准则</legend>
+                                            <div class="form-check form-check-inline" style="display:block;"><input
+                                                    type="radio" id="absoluteOption" class="form-check-input"
+                                                    name="StabilityCriterion" value="absoluteOption"><label
+                                                    class="form-check-label" value="absoluteOption" for="absoluteOption">
+                                                    绝对的横向静态稳定性</label></div>
+                                            <div class="form-check form-check-inline" style="display:block;"><input
+                                                    type="radio" id="generalisedOption" class="form-check-input"
+                                                    name="StabilityCriterion" value="generalisedOption"><label
+                                                    class="form-check-label" value="generalisedOption"
+                                                    for="generalisedOption"> 广义横向稳定性 </label></div>
+                                            <div class="form-check form-check-inline" style="display:block;"><input
+                                                    type="radio" id="dynamicOption" class="form-check-input"
+                                                    name="StabilityCriterion" value="dynamicOption"><label
+                                                    class="form-check-label" value="dynamicOption" for="dynamicOption">
+                                                    动态横向稳定性 </label></div>
+                                        </fieldset>
+                                        <div class="absolute_specific">  
+                                            <div class="input-group was-validated absolute_specific">
+                                                <div class="input-group-prepend"><span class="input-group-text">摩擦系数</span>
+                                                </div><input class="form-control" id="friction_coefficient" type="number" max="Infinity" min="-1e+256"
+                                                    step="0.01">
+                                                <div class="input-group-append"><span class="input-group-text"></span></div>
+                                            </div>
+                                            <div class="input-group was-validated absolute_specific">
+                                                <div class="input-group-prepend"><span class="input-group-text">安全系数</span>
+                                                </div><input class="form-control" id="safety_factor" type="number" max="Infinity" min="-1e+256"
+                                                    step="0.01">
+                                                <div class="input-group-append"><span class="input-group-text"></span></div>
+                                            </div>
+                                        </div>      
+                                        <fieldset class="generalised_specific">
+                                            <legend style="width: 180px;font-weight: bold;">侧向位移小于下列值</legend>
+                                            <div class="form-check form-check-inline" style="display:block;"><input
+                                                    type="radio" class="form-check-input" id="halfOption"
+                                                    name="halfOrten" value="halfOption"><label
+                                                    class="form-check-label" for="halfOption"> 0.5D(管道直径 - 虚拟稳定性)</label>
+                                            </div>
+                                            <div class="form-check form-check-inline" style="display:block;"><input
+                                                    type="radio" class="form-check-input" id="halfOption"
+                                                    name="halfOrten" value="halfOption"><label
+                                                    class="form-check-label" for="halfOption"> 10D(10倍管道直径)
+                                                </label></div>
+                                        </fieldset>
+                                        <div class="input-group was-validated dynamic_specific" id="dynamic_specific">
+                                            <div class="input-group-prepend"><span class="input-group-text">侧向位移</span>
+                                            </div><input class="form-control" type="number" id="lateral_displacement"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span
+                                                class="input-group-text input-group-text">D(管径)</span></div>
+                                        </div>
+                                        <div class="btn-group" role="group"
+                                            style="margin-top:12px;margin-bottom:8px;width:100%;"><button
+                                                class="btn btn-primary" type="button" onclick="calculatePipe()">计算</button><button
+                                                class="btn btn-secondary" type="button" onclick="reset()">重置</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card card-data" style="height: 300px;">
+                                        <h3 style="margin-bottom: 0px;font-weight: bold;">数据建议</h3>
+                                        <h5 style="margin-bottom: 0px;font-weight: bold;">根据DNV-RP-F109</h5>
+                                        <h6 style="font-weight: bold;margin-top: 13px;margin-bottom: 6px;">摩擦系数：</h6>
+                                        <p style="color: #000000;">沙海海床&nbsp;0.6; 粘土海底&nbsp;0.2</p>
+                                        <h6
+                                            style="font-weight: bold;margin-bottom: 9px;padding-top: 0px;margin-top: 2px;">
+                                            安全系数：</h6>
+                                        <div class="table-responsive" style="height: 130px;font-size: 14px;">
+                                            <table class="table table-bordered">
+                                                <thead style="background: #e7e7e7;height: 40.5px;">
+                                                    <tr style="height: 30.5px;border-bottom:0px;">
+                                                        <th class="text-left" style="font-size: 14px;padding: 0px 10px 10px 0px;">保守
+                                                        </th>
+                                                        <th class="text-left" style="font-size: 14px;padding: 0px 10px 10px 0px;">低
+                                                        </th>
+                                                        <th class="text-left" style="font-size: 14px;padding: 0px 10px 10px 0px;">正常
+                                                        </th>
+                                                        <th class="text-left" style="font-size: 14px;padding: 0px 10px 10px 0px;">高
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style="height: 30.5px;padding: 0px;border-bottom:0px;background: rgba(255,255,255,0);">
+                                                        <th style="padding: 0px;font-size: 14px;" scope="row">沙子和岩石</th>
+                                                        <td style="padding: 0px;">0.95</td>
+                                                        <td style="padding: 0px;">1.50</td>
+                                                        <td style="padding: 0px;">2.16</td>
+                                                    </tr>
+                                                    <tr style="height: 30.5px;padding: 0px;border-bottom:0px;background: rgba(255,255,255,0);">
+                                                        <th style="padding: 0px;font-size: 14px;" scope="row">黏土&nbsp;</th>
+                                                        <td style="padding: 0px;">0.95</td>
+                                                        <td style="padding: 0px;">1.56</td>
+                                                        <td style="padding: 0px;">2.31</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card card-output" style="height: 244.594px;">
+                                        <h3 style="margin-bottom: 0px;">结果输出</h3>
+                                        <p class="weight_specific" style="font-size: 16px;color: #000000;">无结果</p>
+                                        <p class="stability_specific" style="font-size: 16px;color: #000000;">无结果</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div id="sidebar" style="display: block;">
+            <!-- $.load -->
+        </div>
+    </div>
+    </div>
+    <script src="assets/jquery/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/transition.js"></script>
+    <script src="assets/js/owl-carousel.js"></script>
+    <script src="assets/js/custom.js"></script>
+    <script src="pipe/pipe.js"></script>
+    <script>
+        $("#header").load("parts/header.html");
+        $("#sidebar").load("parts/sidebar.html");
+    </script>
+</body>
+
+</html>
