@@ -455,7 +455,7 @@ function calculateWalking(){
         heat_cool_H=cool_LessThan_XC(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_L,Eta,X_H,heat_cool_C);
         heat_cool_C=cool_LessThan_XC(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_R,Eta,X_C,heat_cool_C);
         heat_cool_Left =cool_LessThan_XC(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_L,Eta,0,heat_cool_C);
-        heat_cool_Right=cool_MoreThan_XC(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_L,Eta,L,heat_cool_C);
+        heat_cool_Right=cool_MoreThan_XC(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_R,Eta,L,heat_cool_C);
         keypointdisps.M.push(cool_M); 
         keypointdisps.Heat.push(heat_cool_H);
         keypointdisps.Cool.push(heat_cool_C);
