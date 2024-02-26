@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>海底管道走管</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700">
+    <link rel="stylesheet" href="assets/css/FontAwesome.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="assets/css/assets/css/templatemo-style.css">
+    <link rel="stylesheet" href="assets/css/assets/css/owl.css">
+    <link rel="stylesheet" href="assets/css/Footer-Basic-icons.css">
+</head>
+
+<body class="is-preload" style="background-color:snow;" onload="resetWalking()">
+    <div id="wrapper">
+        <div id="main">
+            <div class="inner">
+                <header id="header">
+                    <!-- $.load -->
+                </header>
+                <div id="main-content">
+                    <section class="main-banner" style="padding-bottom:46px;">
+                        <div class="container container-wide">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card card-input">
+                                        <h3 style="font-weight: bold;">参数输入</h3>
+                                        <h4>管道参数</h4>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">截面面积</span>
+                                            </div><input class="form-control" type="number" id="A" 
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span
+                                                    class="input-group-text">m<sup>2</sup> </span></div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">管道长度</span>
+                                            </div><input class="form-control" type="number" id="L" 
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span
+                                                    class="input-group-text">m</span></div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">管道壁厚</span>
+                                            </div><input class="form-control" type="number" id="t" 
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span
+                                                    class="input-group-text">m</span></div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">管道半径</span>
+                                            </div><input class="form-control" type="number" id="r" 
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span
+                                                    class="input-group-text">m</span></div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">管道自重</span>
+                                            </div><input class="form-control" type="number" id="w"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">kN/m</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">弹性模量</span>
+                                            </div><input class="form-control" type="number" id="E"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">GPa</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">热膨胀系数</span>
+                                            </div><input class="form-control" type="number" id="Alpha"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">/℃</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">泊松比</span>
+                                            </div><input class="form-control" type="number" id="pois"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text"></span>
+                                            </div>
+                                        </div>
+                                        <h4>海坡参数</h4>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">摩擦系数</span>
+                                            </div><input class="form-control" type="number" id="mu" max="Infinity"
+                                                min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text"></span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">海坡角度</span>
+                                            </div><input class="form-control" type="number" id="Theta" max="Infinity"
+                                                min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">°</span>
+                                            </div>
+                                        </div>
+                                        <h4>荷载参数</h4>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">左端张力</span>
+                                            </div><input class="form-control" type="number" id="F_L"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">kN</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">右端张力</span>
+                                            </div><input class="form-control" type="number" id="F_R"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">kN</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">初始轴力</span>
+                                            </div><input class="form-control" type="number" id="T_Inital"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">kN</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">终点轴力</span>
+                                            </div><input class="form-control" type="number" id="T_End"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">kN</span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group was-validated">
+                                            <div class="input-group-prepend"><span class="input-group-text">管道内压</span>
+                                            </div><input class="form-control" type="number" id="Internal_pressure"
+                                                max="Infinity" min="-1e+256" step="0.01">
+                                            <div class="input-group-append"><span class="input-group-text">MPa</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="btn-group" role="group"
+                                            style="margin-top:12px;margin-bottom:8px;width:100%;">
+                                            <button class="btn btn-primary" type="button" onclick="calculateWalking()">计算</button>
+                                            <!-- <button class="btn btn-success" type="button" onclick="optimiseVhm()">优化</button> -->
+                                            <button class="btn btn-danger" type="button" onclick="resetWalking()">重置</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card card-data" style="height: 760px;">
+                                        <h3 style="margin-bottom: 10px;font-weight: bold;">管道受力分析图</h3>
+                                        <div class="img-fluid" style="width:600px;height:300px;">
+                                            <img src="assets/img/pipewalking.png" style="width:100%" alt="">
+                                        </div>
+                                        <h3 style="margin-bottom: 10px;font-weight: bold;">计算结果</h3>
+                                        <div class="row">
+                                            <label class="col-3 control-label" for="select-echart">选择绘图数据 </label>
+                                            <select class="col-6 form-select" id="echart" aria-label="Default select example" >
+                                                <option value="keypointdisp" selected>关键点位移-循环次数曲线</option>
+                                                <option value="keypointN">关键点轴力-循环次数曲线</option>
+                                                <option value="keypointstrain">关键点应变-循环次数曲线</option>
+                                                <option value="disp">管道各点位移-点位置曲线</option>
+                                                <option value="N">管道各点轴力-点位置曲线</option>
+                                                <option value="strain">管道各点应变-点位置曲线</option>
+                                                <option value="resistancesoil">土阻力曲线</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="img-fluid echart" id="echart_walking" style="width:600px;height:300px;" >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="row">
+                                <div class="col-md-6" style="padding-top:20px;">
+                                    
+                                    <div class="card card-data" style="height: 500px;">
+                                        <h3 style="margin-bottom: 10px;font-weight: bold;">计算结果</h3>
+                                        <div class="img-fluid echart" id="echart_disp" style="width:600px;height:300px;" >
+                                        </div>
+                                    </div>  
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="img-fluid" id="echart_" style="width:600px;height:300px;" >
+                                    </div>
+                                </div>
+                                
+                            </div> -->
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div id="sidebar" style="display: block;">
+           <!-- $.load -->
+        </div>
+    </div>
+    <script src="assets/jquery/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/transition.js"></script>
+    <script src="assets/js/owl-carousel.js"></script>
+    <script src="assets/js/custom.js"></script>
+    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script> -->
+    <!-- <script src="assets/plotly/plotly.min.js"></script> -->
+    <script src="assets/echart/echarts.min.js"></script>
+    <script src="/pipewalking/Walking.min.js"> </script>
+    <script src="/pipewalking/math.min.js"> </script>
+    <script async>
+        $("#header").load("parts/header.html");
+        $("#sidebar").load("parts/sidebar.html");
+        // var html = $.ajax({url:"sidebar.html" , async:false});
+        // $("#sidebar").html(html.responseText);
+        
+    </script>
+    
+</body>
+
+</html>
