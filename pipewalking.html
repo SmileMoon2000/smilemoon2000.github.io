@@ -62,7 +62,7 @@
                                             <div class="input-group-prepend"><span class="input-group-text">管道自重</span>
                                             </div><input class="form-control" type="number" id="w"
                                                 max="Infinity" min="-1e+256" step="0.01">
-                                            <div class="input-group-append"><span class="input-group-text">kN/m</span>
+                                            <div class="input-group-append"><span class="input-group-text">N/m</span>
                                             </div>
                                         </div>
                                         <div class="input-group was-validated">
@@ -117,17 +117,17 @@
                                             </div>
                                         </div>
                                         <div class="input-group was-validated">
-                                            <div class="input-group-prepend"><span class="input-group-text">初始轴力</span>
+                                            <div class="input-group-prepend"><span class="input-group-text">初始温度</span>
                                             </div><input class="form-control" type="number" id="T_Inital"
                                                 max="Infinity" min="-1e+256" step="0.01">
-                                            <div class="input-group-append"><span class="input-group-text">kN</span>
+                                            <div class="input-group-append"><span class="input-group-text">℃</span>
                                             </div>
                                         </div>
                                         <div class="input-group was-validated">
-                                            <div class="input-group-prepend"><span class="input-group-text">终点轴力</span>
+                                            <div class="input-group-prepend"><span class="input-group-text">终点温度</span>
                                             </div><input class="form-control" type="number" id="T_End"
                                                 max="Infinity" min="-1e+256" step="0.01">
-                                            <div class="input-group-append"><span class="input-group-text">kN</span>
+                                            <div class="input-group-append"><span class="input-group-text">℃</span>
                                             </div>
                                         </div>
                                         <div class="input-group was-validated">
@@ -164,8 +164,7 @@
                                                 <option value="strain">管道各点应变-点位置曲线</option>
                                                 <option value="resistancesoil">土阻力曲线</option>
                                             </select>
-                                        </div>
-                                        
+                                        </div>    
                                         <div class="img-fluid echart" id="echart_walking" style="width:600px;height:300px;" >
                                         </div>
                                     </div>
@@ -213,7 +212,7 @@
         $("#sidebar").load("parts/sidebar.html");
         // var html = $.ajax({url:"sidebar.html" , async:false});
         // $("#sidebar").html(html.responseText);
-        
+
     </script>
     
 </body>

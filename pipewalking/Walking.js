@@ -126,10 +126,10 @@ function N_MoreThan_XH(mu,Theta,w,x,L,F_L,F_R) {
   return (mu*Math.cos(Theta)-Math.sin(Theta))*w*(x-L)+F_R;
 }
 function N_LessThan_XC(mu,Theta,w,x,L,F_L,F_R) {
-  return (mu*Math.cos(Theta)+Math.sin(Theta))*w*x+F_L;
+  return (mu*Math.cos(Theta)-Math.sin(Theta))*w*x+F_L;
 }
 function N_MoreThan_XC(mu,Theta,w,x,L,F_L,F_R) {
-  return (mu*Math.cos(Theta)-Math.sin(Theta))*w*(L-x)+F_R;
+  return (mu*Math.cos(Theta)+Math.sin(Theta))*w*(L-x)+F_R;
 }
 
 function strain_LessThan_XH(Alpha,Delta_T,F_L,F_R,E,A,mu,Theta,WW,L,x) {
@@ -139,10 +139,10 @@ function strain_MoreThan_XH(Alpha,Delta_T,F_L,F_R,E,A,mu,Theta,WW,L,x) {
   return Alpha*Delta_T+F_R/E/A-(mu*Math.cos(Theta)-Math.sin(Theta))*WW*(L-x)/E/A/L;
 }
 function strain_LessThan_XC(Alpha,Delta_T,F_L,F_R,E,A,mu,Theta,WW,L,x) {
-  return Alpha*Delta_T+F_L/E/A-(mu*Math.cos(Theta)-Math.sin(Theta))*WW*x/E/A/L;
+  return Alpha*Delta_T+F_L/E/A+(mu*Math.cos(Theta)-Math.sin(Theta))*WW*x/E/A/L;
 }
 function strain_MoreThan_XC(Alpha,Delta_T,F_L,F_R,E,A,mu,Theta,WW,L,x) {
-  return Alpha*Delta_T+F_R/E/A-(mu*Math.cos(Theta)+Math.sin(Theta))*WW*(L-x)/E/A/L;
+  return Alpha*Delta_T+F_R/E/A+(mu*Math.cos(Theta)+Math.sin(Theta))*WW*(L-x)/E/A/L;
 }
 
 function keypoints_series(Cycle,keypoints,Name) {
@@ -359,7 +359,6 @@ function calculateWalking(){
         series_ResistanceSoil_H.push({name:(iii+1).toString()+"次升温土阻力",type:"line",showSymbol:false,data:x_ResistanceSoil});
         // 
         
-        
         //轴力 N=zeros(1,xx1.length+xx2.length)
         arr1 = xx1.map((x)=>N_LessThan_XH(mu,Theta,w,x,L,F_L,F_R));
         arr2 = xx2.map((x)=>N_MoreThan_XH(mu,Theta,w,x,L,F_L,F_R));
@@ -397,7 +396,7 @@ function calculateWalking(){
         heat_cool_H=heat_LessThan_XH(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_L,Eta,X_H,heat_cool_H);
         heat_cool_C=heat_MoreThan_XH(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_R,Eta,X_C,heat_cool_H);
         heat_cool_Left =heat_LessThan_XH(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_L,Eta,0,heat_cool_H);
-        heat_cool_Right=heat_MoreThan_XH(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_L,Eta,L,heat_cool_H);
+        heat_cool_Right=heat_MoreThan_XH(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_R,Eta,L,heat_cool_H);
         keypointdisps.M.push(heat_M); 
         keypointdisps.Heat.push(heat_cool_H);
         keypointdisps.Cool.push(heat_cool_C);
@@ -412,8 +411,8 @@ function calculateWalking(){
         xx=xx1.concat(xx2);
         
         //摩阻力 ResistanceSoil=zeros(1,xx1.length+xx2.length),
-        arr1 = new Array(xx1.length).fill(-mu*w*Math.cos(Theta));
-        arr2 = new Array(xx2.length).fill(mu*w*Math.cos(Theta));
+        arr1 = new Array(xx1.length).fill(mu*w*Math.cos(Theta));
+        arr2 = new Array(xx2.length).fill(-mu*w*Math.cos(Theta));
         ResistanceSoil= arr1.concat(arr2);
         x_ResistanceSoil = xx.map((key,value)=>[key,ResistanceSoil[value]]);
         series_ResistanceSoil_C.push({name:(iii+1).toString()+"次降温土阻力",type:"line",showSymbol:false,data:x_ResistanceSoil});
@@ -457,7 +456,7 @@ function calculateWalking(){
         heat_cool_C=cool_LessThan_XC(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_R,Eta,X_C,heat_cool_C);
         heat_cool_Left =cool_LessThan_XC(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_L,Eta,0,heat_cool_C);
         heat_cool_Right=cool_MoreThan_XC(mu,Theta,WW,E,A,L,Alpha,Delta_T,F_L,Eta,L,heat_cool_C);
-        keypointdisps.M.push(heat_M); 
+        keypointdisps.M.push(cool_M); 
         keypointdisps.Heat.push(heat_cool_H);
         keypointdisps.Cool.push(heat_cool_C);
         keypointdisps.Left.push(heat_cool_Left);
