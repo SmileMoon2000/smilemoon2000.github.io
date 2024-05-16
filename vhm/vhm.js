@@ -143,7 +143,7 @@ var blankLayout = {
 };
 
 var resetPlots = function(context) {
-  Plotly.newPlot('vhm-plot', [], blankLayout);fullscreenTool();
+  Plotly.newPlot(fullPlotlyId, [], blankLayout);fullscreenTool();
 };
 
 function resetVhm(){

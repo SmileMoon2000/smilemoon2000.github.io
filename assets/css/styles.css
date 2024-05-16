@@ -26,6 +26,7 @@ button.btn {
   /*height: 100%;*/
   padding-left: 10px;
   padding-right: 10px;
+  margin: 10px 0px;
 }
 
 fieldset {
@@ -83,3 +84,11 @@ tr th {
   height: 300px;
 }
 
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
