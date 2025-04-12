@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海底管道轴向走管弹塑性解析解</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .phase-section {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .input-group {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        label {
+            width: 150px;
+            margin-right: 10px;
+        }
+        input[type="number"] {
+            width: 120px;
+            padding: 5px;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        .warning {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="phase-section">
+        <h1>第一阶段: Hot_1 (Newton-Raphson method)</h1>
+        
+        <h2>基本参数</h2>
+        <div class="input-group">
+            <label for="theta">theta (海床倾角 °):</label>
+            <input type="number" id="theta" value="2">
+        </div>
+        <div class="input-group">
+            <label for="mu">Mu  (摩擦系数):</label>
+            <input type="number" id="mu" value="0.5">
+        </div>
+        <div class="input-group">
+            <label for="nu">nu  (泊松比):</label>
+            <input type="number" id="nu" value="0.3">
+        </div>
+        <div class="input-group">
+            <label for="delta_e">Delta_e  (弹性滑移 m):</label>
+            <input type="number" id="delta_e" value="0.1">
+        </div>
+        <div class="input-group">
+            <label for="alpha">Alpha  (膨胀系数 ℃^-1):</label>
+            <input type="number" id="alpha" value="1.165e-5">
+        </div>
+        <div class="input-group">
+            <label for="T">T  (加热温度 ℃):</label>
+            <input type="number" id="T" value="100">
+        </div>
+        <div class="input-group">
+            <label for="T_c">T_c  (冷却温度 ℃):</label>
+            <input type="number" id="T_c" value="0">
+        </div>
+        <div class="input-group">
+            <label for="w">W  (管道重量 N/m):</label>
+            <input type="number" id="w" value="1200">
+        </div>
+        <div class="input-group">
+            <label for="L">L  (管道长度 m):</label>
+            <input type="number" id="L" value="5000">
+        </div>
+        <div class="input-group">
+            <label for="E">E  (弹性模量 Pa):</label>
+            <input type="number" id="E" value="2.07e11">
+        </div>
+        <div class="input-group">
+            <label for="A">A  (管道截面面积 m^2):</label>
+            <input type="number" id="A" value="0.02">
+        </div>
+        <h2>管端力(远离管道截面为正，单位： N)</h2>
+        <div class="input-group">
+            <label for="Ft">Ft  (管端左张力):</label>
+            <input type="number" id="Ft" value="100000">
+        </div>
+        <div class="input-group">
+            <label for="Fb">Fb  (管端右张力):</label>
+            <input type="number" id="Fb" value="300000">
+        </div>
+
+        <h2>初始解</h2>
+        <div class="initial-solution-group">
+            <div class="input-group">
+                <label for="c1">c1:</label>
+                <input type="number" id="c1" value="-1.0079">
+            </div>
+            <div class="input-group">
+                <label for="c2">c2:</label>
+                <input type="number" id="c2" value="0.5263">
+            </div>
+            <div class="input-group">
+                <label for="x_Ho">x_Ho:</label>
+                <input type="number" id="x_Ho" value="-509">
+            </div>
+            <div class="input-group">
+                <label for="x_Hi">x_Hi:</label>
+                <input type="number" id="x_Hi" value="-323">
+            </div>
+        </div>
+
+        <h2>位移参数(管道中点为坐标原点，单位: m)</h2>
+        <div class="input-group">
+            <label for="x1">x1  （管道左端点）:</label>
+            <input type="number" id="x1" value="-2500">
+        </div>
+        <div class="input-group">
+            <label for="x2">x2  （管道中点）:</label>
+            <input type="number" id="x2" value="0">
+        </div>
+        <div class="input-group">
+            <label for="x3">x3  （管道右端点）:</label>
+            <input type="number" id="x3" value="2500">
+        </div>
+
+        <button onclick="calculateFirstPhase()">计算第一阶段</button>
+        <div class="result" id="first-phase-result"></div>
+    </div>
+
+    
+    <div class="phase-section">
+        <h1>第二阶段: Cool_1-Cool_5</h1>
+     
+        <div class="result" id="second-phase-result"></div>
+    </div>
+</div>
+
+<script>
+  
+    let firstPhaseResults = null;
+    let firstPhaseConverged = false;
+    
+    function calculateFirstPhase() {
+        const theta = parseFloat(document.getElementById('theta').value) * (Math.PI / 180); 
+        const mu = parseFloat(document.getElementById('mu').value);
+        const delta_e = parseFloat(document.getElementById('delta_e').value);
+        const alpha = parseFloat(document.getElementById('alpha').value);
+        const T = parseFloat(document.getElementById('T').value);
+        const T_c = parseFloat(document.getElementById('T_c').value);
+        const w = parseFloat(document.getElementById('w').value);
+        const L = parseFloat(document.getElementById('L').value);
+        const E = parseFloat(document.getElementById('E').value);
+        const A = parseFloat(document.getElementById('A').value);
+        const Ft = parseFloat(document.getElementById('Ft').value);
+        const Fb = parseFloat(document.getElementById('Fb').value);
+        
+        const c1 = parseFloat(document.getElementById('c1').value);
+        const c2 = parseFloat(document.getElementById('c2').value);
+        const x_Ho = parseFloat(document.getElementById('x_Ho').value);
+        const x_Hi = parseFloat(document.getElementById('x_Hi').value);
+        
+        const x1 = parseFloat(document.getElementById('x1').value);
+        const x2 = parseFloat(document.getElementById('x2').value);
+        const x3 = parseFloat(document.getElementById('x3').value);
+        
+        let r = [c1, c2, x_Ho, x_Hi]; 
+        
+        const k = (mu * w * Math.cos(theta)) / delta_e;
+        const lambda = Math.sqrt(E * A / k);
+        const ft = Ft / (E * A);
+        const fb = Fb / (E * A);
+        const omega_plus = ((mu * w * Math.cos(theta) + w * Math.sin(theta)) * L) / (E * A);
+        const omega_minus = ((mu * w * Math.cos(theta) - w * Math.sin(theta)) * L) / (E * A);
+
+        const tolerance = 1e-6;
+        const max_iter = 1000;
+
+        let converged = false; 
+        let final_iter = 0;    
+
+        for (let iter = 1; iter <= max_iter; iter++) {
+            const [c1, c2, x_Ho, x_Hi] = r;
+
+            const F1 = c1 * Math.exp(x_Ho / lambda) + c2 * Math.exp(-x_Ho / lambda) + (w * Math.sin(theta)) / k + delta_e;
+            const F2 = c1 * Math.exp(x_Hi / lambda) + c2 * Math.exp(-x_Hi / lambda) + (w * Math.sin(theta)) / k - delta_e;
+            const F3 = (c1 / lambda) * Math.exp(x_Ho / lambda) - (c2 / lambda) * Math.exp(-x_Ho / lambda) - alpha * T + omega_plus * (x_Ho / L + 0.5) - ft;
+            const F4 = (c1 / lambda) * Math.exp(x_Hi / lambda) - (c2 / lambda) * Math.exp(-x_Hi / lambda) - alpha * T - omega_minus * (x_Hi / L - 0.5) - fb;
+
+            const F = [F1, F2, F3, F4];
+
+            if (Math.sqrt(F.reduce((sum, val) => sum + val * val, 0)) < tolerance) {
+                console.log(`收敛于第 ${iter} 次迭代`);
+                converged = true;
+                final_iter = iter;  
+                break;
+            }
+            
+            const J = [
+                [Math.exp(x_Ho / lambda), Math.exp(-x_Ho / lambda), (c1 / lambda) * Math.exp(x_Ho / lambda) - (c2 / lambda) * Math.exp(-x_Ho / lambda), 0],
+                [Math.exp(x_Hi / lambda), Math.exp(-x_Hi / lambda), 0, (c1 / lambda) * Math.exp(x_Hi / lambda) - (c2 / lambda) * Math.exp(-x_Hi / lambda)],
+                [(1 / lambda) * Math.exp(x_Ho / lambda), -(1 / lambda) * Math.exp(-x_Ho / lambda), (c1 / lambda ** 2) * Math.exp(x_Ho / lambda) + (c2 / lambda ** 2) * Math.exp(-x_Ho / lambda) + omega_plus / L, 0],
+                [(1 / lambda) * Math.exp(x_Hi / lambda), -(1 / lambda) * Math.exp(-x_Hi / lambda), 0, (c1 / lambda ** 2) * Math.exp(x_Hi / lambda) + (c2 / lambda ** 2) * Math.exp(-x_Hi / lambda) - omega_minus / L]
+            ];
+            
+            const delta_r = solveLinearSystem(J, F.map(val => -val));
+            r = r.map((val, i) => val + delta_r[i]);
+
+            console.log(`第 ${iter} 次迭代: c1 = ${r[0]}, c2 = ${r[1]}, x_Ho = ${r[2]}, x_Hi = ${r[3]}`);
+        }
+
+        if (!converged) {
+            const resultDiv = document.getElementById('first-phase-result');
+            resultDiv.innerHTML = `
+                <h2 style="color: red">计算未收敛</h2>
+                <pre>经过 ${max_iter} 次迭代仍未达到收敛条件\n请尝试:
+1. 增加最大迭代次数
+2. 调整初始猜测值
+3. 检查输入参数合理性
+</pre>
+            `;
+            firstPhaseConverged = false;
+        
+          
+            const secondPhaseResultDiv = document.getElementById('second-phase-result');
+            secondPhaseResultDiv.innerHTML = `
+                <h2 style="color: red">警告</h2>
+                <pre>第一阶段计算结果未收敛，无法进行第二阶段计算！</pre>
+        `;
+        return;
+        }
+
+        firstPhaseConverged = true; 
+
+        console.log('最终解:');
+        console.log(`c1 = ${r[0]}`);
+        console.log(`c2 = ${r[1]}`);
+        console.log(`x_Ho = ${r[2]}`);
+        console.log(`x_Hi = ${r[3]}`);
+       
+        const u_H1 = -omega_plus * (x1 ** 2 - r[2] ** 2) / (2 * L) + (alpha * T - omega_plus / 2 + ft) * (x1 - r[2]) - delta_e;
+        const u_H2 = omega_minus * (x2 ** 2 - r[3] ** 2) / (2 * L) + (alpha * T - omega_minus / 2 + fb) * (x2 - r[3]) + delta_e;
+        const u_H3 = omega_minus * (x3 ** 2 - r[3] ** 2) / (2 * L) + (alpha * T - omega_minus / 2 + fb) * (x3 - r[3]) + delta_e;
+
+        console.log(`u_H1 = ${u_H1}`);
+        console.log(`u_H2 = ${u_H2}`);
+        console.log(`u_H3 = ${u_H3}`);
+
+      
+        const resultDiv = document.getElementById('first-phase-result');
+        resultDiv.innerHTML = `
+            <h2>第一阶段计算结果(单位: m)</h2>
+            <pre>
+收敛于第 ${final_iter} 次迭代
+
+第一次循环加热最终解:
+c1 = ${r[0]}
+c2 = ${r[1]}
+x_Ho = ${r[2]}
+x_Hi = ${r[3]}
+
+第一次循环加热位移结果:
+u_H1 = ${u_H1.toFixed(8)}
+u_H2 = ${u_H2.toFixed(8)}
+u_H3 = ${u_H3.toFixed(8)}
+            </pre>
+        `;
+
+
+        firstPhaseResults = {
+            c1: r[0],
+            c2: r[1],
+            x_Ho: r[2],
+            x_Hi: r[3],
+            u_H1: u_H1,
+            u_H2: u_H2,
+            u_H3: u_H3,
+            theta,
+            mu,
+            delta_e,
+            alpha,
+            T,
+            T_c,
+            w,
+            L,
+            E,
+            A,
+            Ft,
+            Fb,
+            x1,
+            x2,
+            x3
+        };
+      
+        calculateSecondPhase(firstPhaseResults);
+    }
+
+    
+    function calculateSecondPhase(inputs) {
+        if (!inputs || !firstPhaseConverged) {
+            const secondPhaseResultDiv = document.getElementById('second-phase-result');
+            secondPhaseResultDiv.innerHTML = `
+                <h2 style="color: red">警告</h2>
+                <pre>第一阶段计算结果未收敛，请检查输入参数或调整初始值！</pre>
+            `;
+            return;
+        }
+        
+        const { c1, c2, x_Ho, x_Hi, u_H1, u_H2, u_H3, theta, mu, delta_e, alpha, T, T_c, w, L, E, A, Ft, Fb, x1, x2, x3 } = inputs;
+       
+        const k = (mu * w * Math.cos(theta)) / delta_e;
+        const lambda = Math.sqrt(E * A / k);
+        const ft = Ft / (E * A);
+        const fb = Fb / (E * A);
+        const omega_plus = ((mu * w * Math.cos(theta) + w * Math.sin(theta)) * L) / (E * A);
+        const omega_minus = ((mu * w * Math.cos(theta) - w * Math.sin(theta)) * L) / (E * A);
+
+        const Q = w * L * Math.sin(theta) + Fb - Ft;
+        const omega = (mu * w * L * Math.cos(theta)) / (E * A);
+        const R = (mu * w * L * Math.cos(theta) - Q) / (E * A);
+
+        //===================================================================第一次循环冷却计算=====================================================================//
+        //解的计算//
+        const x_Co = L * 0.5 * (1 - alpha * T / omega + 1 / omega * Math.sqrt(Math.pow(2 * delta_e / lambda, 2) + Math.pow(alpha * T - R, 2)));
+        const x_Ci = x_Co - lambda * Math.log(Math.sqrt(Math.pow(2 * delta_e / (lambda * (alpha * T - R)), 2) + 1) + (2 * delta_e / (lambda * (alpha * T - R))));
+        const c3 = -lambda / 2 * (alpha * T - R) * Math.exp(-x_Ci / lambda);
+        const c4 = lambda / 2 * (alpha * T - R) * Math.exp(x_Ci / lambda);
+        //叠加位移计算//
+        const u_Hci = omega_minus * (Math.pow(x_Ci, 2) - Math.pow(x_Hi, 2)) / (2 * L) + (alpha * T - omega_minus / 2 + fb) * (x_Ci - x_Hi) + delta_e;
+        const u_Hco = omega_minus * (Math.pow(x_Co, 2) - Math.pow(x_Hi, 2)) / (2 * L) + (alpha * T - omega_minus / 2 + fb) * (x_Co - x_Hi) + delta_e;
+        //位移计算//
+        const u_C1 = omega_minus / (2 * L) * (Math.pow(x1, 2) - Math.pow(x_Ci, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x1 - x_Ci) + u_Hci;
+        const u_C2 = omega_minus / (2 * L) * (Math.pow(x2, 2) - Math.pow(x_Ci, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x2 - x_Ci) + u_Hci;
+        const u_C3 = -omega_plus / (2 * L) * (Math.pow(x3, 2) - Math.pow(x_Co, 2)) + (alpha * T_c + omega_plus / 2 + fb) * (x3 - x_Co) + u_Hco - 2 * delta_e;
+        //================================================================== 第二次循环加热计算 ====================================================================//
+        //解的计算//
+        const x_HHo = -L * 0.5 * (1 - alpha * T / omega + 1 / omega * Math.sqrt(Math.pow(2 * delta_e / lambda, 2) + Math.pow(alpha * T - R, 2)));
+        const x_HHi = x_HHo + lambda * Math.log(Math.sqrt(Math.pow(2 * delta_e / (lambda * (alpha * T - R)), 2) + 1) + (2 * delta_e / (lambda * (alpha * T - R))));
+        const c5 = lambda / 2 * (alpha * T - R) * Math.exp(-x_HHi / lambda);
+        const c6 = -lambda / 2 * (alpha * T - R) * Math.exp(x_HHi / lambda);
+        // 叠加位移计算//
+        const u_Chho = omega_minus / (2 * L) * (Math.pow(x_HHo, 2) - Math.pow(x_Ci, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x_HHo - x_Ci) + u_Hci;
+        const u_Chhi = omega_minus / (2 * L) * (Math.pow(x_HHi, 2) - Math.pow(x_Ci, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x_HHi - x_Ci) + u_Hci;
+        //位移计算//
+        const u_HH1 = -omega_plus / (2 * L) * (Math.pow(x1, 2) - Math.pow(x_HHo, 2)) + (alpha * T - omega_plus / 2 + ft) * (x1 - x_HHo) + u_Chho - 2 * delta_e;
+        const u_HH2 = omega_minus / (2 * L) * (Math.pow(x2, 2) - Math.pow(x_HHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x2 - x_HHi) + u_Chhi;
+        const u_HH3 = omega_minus / (2 * L) * (Math.pow(x3, 2) - Math.pow(x_HHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x3 - x_HHi) + u_Chhi;
+        //================================================================== 第二次循环冷却计算 =================================================================//
+        //解的计算//
+        const x_CCo = L * 0.5 * (1 - alpha * T / omega + 1 / omega * Math.sqrt(Math.pow(2 * delta_e / lambda, 2) + Math.pow(alpha * T - R, 2)));
+        const x_CCi = x_CCo - lambda * Math.log(Math.sqrt(Math.pow(2 * delta_e / (lambda * (alpha * T - R)), 2) + 1) + (2 * delta_e / (lambda * (alpha * T - R))));
+        const c7 = -lambda / 2 * (alpha * T - R) * Math.exp(-x_CCi / lambda);
+        const c8 = lambda / 2 * (alpha * T - R) * Math.exp(x_CCi / lambda);
+        //叠加位移计算//
+        const u_HHcci = omega_minus / (2 * L) * (Math.pow(x_CCi, 2) - Math.pow(x_HHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x_CCi - x_HHi) + u_Chhi;
+        const u_HHcco = omega_minus / (2 * L) * (Math.pow(x_CCo, 2) - Math.pow(x_HHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x_CCo - x_HHi) + u_Chhi;
+        //位移计算//
+        const u_CC1 = omega_minus / (2 * L) * (Math.pow(x1, 2) - Math.pow(x_CCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x1 - x_CCi) + u_HHcci;
+        const u_CC2 = omega_minus / (2 * L) * (Math.pow(x2, 2) - Math.pow(x_CCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x2 - x_CCi) + u_HHcci;
+        const u_CC3 = -omega_plus / (2 * L) * (Math.pow(x3, 2) - Math.pow(x_CCo, 2)) + (alpha * T_c + omega_plus / 2 + fb) * (x3 - x_CCo) + u_HHcco - 2 * delta_e;
+        //==================================================================== 第三次循环加热计算 ================================================================//
+        //解的计算//
+        const x_HHHo = -L * 0.5 * (1 - alpha * T / omega + 1 / omega * Math.sqrt(Math.pow(2 * delta_e / lambda, 2) + Math.pow(alpha * T - R, 2)));
+        const x_HHHi = x_HHo + lambda * Math.log(Math.sqrt(Math.pow(2 * delta_e / (lambda * (alpha * T - R)), 2) + 1) + (2 * delta_e / (lambda * (alpha * T - R))));
+        //叠加位移的计算//
+        const u_CChhho = omega_minus / (2 * L) * (Math.pow(x_HHHo, 2) - Math.pow(x_CCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x_HHHo - x_CCi) + u_HHcci;
+        const u_CChhhi = omega_minus / (2 * L) * (Math.pow(x_HHHi, 2) - Math.pow(x_CCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x_HHHi - x_CCi) + u_HHcci;
+        //位移计算//
+        const u_HHH1 = -omega_plus / (2 * L) * (Math.pow(x1, 2) - Math.pow(x_HHHo, 2)) + (alpha * T - omega_plus / 2 + ft) * (x1 - x_HHHo) + u_CChhho - 2 * delta_e;
+        const u_HHH2 = omega_minus / (2 * L) * (Math.pow(x2, 2) - Math.pow(x_HHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x2 - x_HHHi) + u_CChhhi;
+        const u_HHH3 = omega_minus / (2 * L) * (Math.pow(x3, 2) - Math.pow(x_HHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x3 - x_HHHi) + u_CChhhi;
+        //==================================================================== 第三次循环冷却计算 ==============================================================//
+        //解的计算//
+        const x_CCCo = L * 0.5 * (1 - alpha * T / omega + 1 / omega * Math.sqrt(Math.pow(2 * delta_e / lambda, 2) + Math.pow(alpha * T - R, 2)));
+        const x_CCCi = x_CCo - lambda * Math.log(Math.sqrt(Math.pow(2 * delta_e / (lambda * (alpha * T - R)), 2) + 1) + (2 * delta_e / (lambda * (alpha * T - R))));
+        //叠加位移的计算//
+        const u_HHHccci = omega_minus / (2 * L) * (Math.pow(x_CCCi, 2) - Math.pow(x_HHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x_CCCi - x_HHHi) + u_CChhhi;
+        const u_HHHccco = omega_minus / (2 * L) * (Math.pow(x_CCCo, 2) - Math.pow(x_HHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x_CCCo - x_HHHi) + u_CChhhi;
+        //位移计算//
+        const u_CCC1 = omega_minus / (2 * L) * (Math.pow(x1, 2) - Math.pow(x_CCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x1 - x_CCCi) + u_HHHccci;
+        const u_CCC2 = omega_minus / (2 * L) * (Math.pow(x2, 2) - Math.pow(x_CCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x2 - x_CCCi) + u_HHHccci;
+        const u_CCC3 = -omega_plus / (2 * L) * (Math.pow(x3, 2) - Math.pow(x_CCCo, 2)) + (alpha * T_c + omega_plus / 2 + fb) * (x3 - x_CCCo) + u_HHHccco - 2 * delta_e;
+        //===================================================================== 第四次循环加热计算 =============================================================//
+        //解的计算//
+        const x_HHHHo = -L * 0.5 * (1 - alpha * T / omega + 1 / omega * Math.sqrt(Math.pow(2 * delta_e / lambda, 2) + Math.pow(alpha * T - R, 2)));
+        const x_HHHHi = x_HHo + lambda * Math.log(Math.sqrt(Math.pow(2 * delta_e / (lambda * (alpha * T - R)), 2) + 1) + (2 * delta_e / (lambda * (alpha * T - R))));
+        //叠加位移的计算//
+        const u_CCChhhho = omega_minus / (2 * L) * (Math.pow(x_HHHHo, 2) - Math.pow(x_CCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x_HHHHo - x_CCCi) + u_HHHccci;
+        const u_CCChhhhi = omega_minus / (2 * L) * (Math.pow(x_HHHHi, 2) - Math.pow(x_CCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x_HHHHi - x_CCCi) + u_HHHccci;
+        //位移计算//
+        const u_HHHH1 = -omega_plus / (2 * L) * (Math.pow(x1, 2) - Math.pow(x_HHHHo, 2)) + (alpha * T - omega_plus / 2 + ft) * (x1 - x_HHHHo) + u_CCChhhho - 2 * delta_e;
+        const u_HHHH2 = omega_minus / (2 * L) * (Math.pow(x2, 2) - Math.pow(x_HHHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x2 - x_HHHHi) + u_CCChhhhi;
+        const u_HHHH3 = omega_minus / (2 * L) * (Math.pow(x3, 2) - Math.pow(x_HHHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x3 - x_HHHHi) + u_CCChhhhi;
+        //===================================================================== 第四次循环冷却计算 =============================================================//
+        //解的计算//
+        const x_CCCCo = L * 0.5 * (1 - alpha * T / omega + 1 / omega * Math.sqrt(Math.pow(2 * delta_e / lambda, 2) + Math.pow(alpha * T - R, 2)));
+        const x_CCCCi = x_CCo - lambda * Math.log(Math.sqrt(Math.pow(2 * delta_e / (lambda * (alpha * T - R)), 2) + 1) + (2 * delta_e / (lambda * (alpha * T - R))));
+        //叠加位移的计算//
+        const u_HHHHcccci = omega_minus / (2 * L) * (Math.pow(x_CCCCi, 2) - Math.pow(x_HHHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x_CCCCi - x_HHHHi) + u_CCChhhhi;
+        const u_HHHHcccco = omega_minus / (2 * L) * (Math.pow(x_CCCCo, 2) - Math.pow(x_HHHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x_CCCCo - x_HHHHi) + u_CCChhhhi;
+        //位移计算//
+        const u_CCCC1 = omega_minus / (2 * L) * (Math.pow(x1, 2) - Math.pow(x_CCCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x1 - x_CCCCi) + u_HHHHcccci;
+        const u_CCCC2 = omega_minus / (2 * L) * (Math.pow(x2, 2) - Math.pow(x_CCCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x2 - x_CCCCi) + u_HHHHcccci;
+        const u_CCCC3 = -omega_plus / (2 * L) * (Math.pow(x3, 2) - Math.pow(x_CCCCo, 2)) + (alpha * T_c + omega_plus / 2 + fb) * (x3 - x_CCCCo) + u_HHHHcccco - 2 * delta_e;
+        //===================================================================== 第五次循环加热计算 =============================================================//
+        //解的计算//
+        const x_HHHHHo = -L * 0.5 * (1 - alpha * T / omega + 1 / omega * Math.sqrt(Math.pow(2 * delta_e / lambda, 2) + Math.pow(alpha * T - R, 2)));
+        const x_HHHHHi = x_HHo + lambda * Math.log(Math.sqrt(Math.pow(2 * delta_e / (lambda * (alpha * T - R)), 2) + 1) + (2 * delta_e / (lambda * (alpha * T - R))));
+        //叠加位移的计算//
+        const u_CCCChhhhho = omega_minus / (2 * L) * (Math.pow(x_HHHHHo, 2) - Math.pow(x_CCCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x_HHHHHo - x_CCCCi) + u_HHHHcccci;
+        const u_CCCChhhhhi = omega_minus / (2 * L) * (Math.pow(x_HHHHHi, 2) - Math.pow(x_CCCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x_HHHHHi - x_CCCCi) + u_HHHHcccci;
+        //位移的计算//
+        const u_HHHHH1 = -omega_plus / (2 * L) * (Math.pow(x1, 2) - Math.pow(x_HHHHHo, 2)) + (alpha * T - omega_plus / 2 + ft) * (x1 - x_HHHHHo) + u_CCCChhhhho - 2 * delta_e;
+        const u_HHHHH2 = omega_minus / (2 * L) * (Math.pow(x2, 2) - Math.pow(x_HHHHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x2 - x_HHHHHi) + u_CCCChhhhhi;
+        const u_HHHHH3 = omega_minus / (2 * L) * (Math.pow(x3, 2) - Math.pow(x_HHHHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x3 - x_HHHHHi) + u_CCCChhhhhi;
+        //===================================================================== 第五次循环冷却计算 ============================================================//
+        //解的计算//
+        const x_CCCCCo = L * 0.5 * (1 - alpha * T / omega + 1 / omega * Math.sqrt(Math.pow(2 * delta_e / lambda, 2) + Math.pow(alpha * T - R, 2)));
+        const x_CCCCCi = x_CCo - lambda * Math.log(Math.sqrt(Math.pow(2 * delta_e / (lambda * (alpha * T - R)), 2) + 1) + (2 * delta_e / (lambda * (alpha * T - R))));
+        //叠加位移的计算//
+        const u_HHHHHccccci = omega_minus / (2 * L) * (Math.pow(x_CCCCCi, 2) - Math.pow(x_HHHHHi, 2)) + (alpha * T - omega_minus / 2 + fb) * (x_CCCCCi - x_HHHHHi) + u_CCCChhhhhi;
+        const u_HHHHHccccco = omega_minus / (2 * L) * (Math.pow(x_CCCCCo, 2) - Math.pow(x_HHHHHo, 2)) + (alpha * T - omega_minus / 2 + fb) * (x_CCCCCo - x_HHHHHi) + u_CCCChhhhhi;
+        //位移的计算//
+        const u_CCCCC1 = omega_minus / (2 * L) * (Math.pow(x1, 2) - Math.pow(x_CCCCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x1 - x_CCCCCi) + u_HHHHHccccci;
+        const u_CCCCC2 = omega_minus / (2 * L) * (Math.pow(x2, 2) - Math.pow(x_CCCCCi, 2)) + (alpha * T_c + omega_minus / 2 + ft) * (x2 - x_CCCCCi) + u_HHHHHccccci;
+        const u_CCCCC3 = -omega_plus / (2 * L) * (Math.pow(x3, 2) - Math.pow(x_CCCCCo, 2)) + (alpha * T_c + omega_plus / 2 + fb) * (x3 - x_CCCCCo) + u_HHHHHccccco - 2 * delta_e;
+       
+        const secondPhaseResultDiv = document.getElementById('second-phase-result');
+        secondPhaseResultDiv.innerHTML = `
+            <h2>第二阶段计算结果(单位: m)</h2>
+            <pre>
+第一次循环冷却位移结果:
+u_C1 = ${u_C1.toFixed(8)}
+u_C2 = ${u_C2.toFixed(8)}
+u_C3 = ${u_C3.toFixed(8)}
+
+第二次循环加热位移结果：
+u_HH1 = ${u_HH1.toFixed(8)}
+u_HH2 = ${u_HH2.toFixed(8)}
+u_HH3 = ${u_HH3.toFixed(8)}
+
+第二次循环冷却位移结果：
+u_CC1 = ${u_CC1.toFixed(8)}
+u_CC2 = ${u_CC2.toFixed(8)}
+u_CC3 = ${u_CC3.toFixed(8)}
+
+第三次循环加热位移结果：
+u_HHH1 = ${u_HHH1.toFixed(8)}
+u_HHH2 = ${u_HHH2.toFixed(8)}
+u_HHH3 = ${u_HHH3.toFixed(8)}
+
+第三次循环冷却位移结果：
+u_CCC1 = ${u_CCC1.toFixed(8)}
+u_CCC2 = ${u_CCC2.toFixed(8)}
+u_CCC3 = ${u_CCC3.toFixed(8)}
+
+第四次循环加热位移结果：
+u_HHHH1 = ${u_HHHH1.toFixed(8)}
+u_HHHH2 = ${u_HHHH2.toFixed(8)}
+u_HHHH3 = ${u_HHHH3.toFixed(8)}
+
+第四次循环冷却位移结果：
+u_CCCC1 = ${u_CCCC1.toFixed(8)}
+u_CCCC2 = ${u_CCCC2.toFixed(8)}
+u_CCCC3 = ${u_CCCC3.toFixed(8)}
+
+第五次循环加热位移结果：
+u_HHHHH1 = ${u_HHHHH1.toFixed(8)}
+u_HHHHH2 = ${u_HHHHH2.toFixed(8)}
+u_HHHHH3 = ${u_HHHHH3.toFixed(8)}
+
+第五次循环冷却位移结果：
+u_CCCCC1 = ${u_CCCCC1.toFixed(8)}
+u_CCCCC2 = ${u_CCCCC2.toFixed(8)}
+u_CCCCC3 = ${u_CCCCC3.toFixed(8)}
+            </pre>
+        `;
+    }
+
+    function solveLinearSystem(A, b) {
+        const n = A.length;
+        for (let i = 0; i < n; i++) {
+            let maxRow = i;
+            for (let j = i + 1; j < n; j++) {
+                if (Math.abs(A[j][i]) > Math.abs(A[maxRow][i])) {
+                    maxRow = j;
+                }
+            }
+            [A[i], A[maxRow]] = [A[maxRow], A[i]];
+            [b[i], b[maxRow]] = [b[maxRow], b[i]];
+
+            for (let j = i + 1; j < n; j++) {
+                const factor = A[j][i] / A[i][i];
+                b[j] -= factor * b[i];
+                for (let k = i; k < n; k++) {
+                    A[j][k] -= factor * A[i][k];
+                }
+            }
+        }
+
+        const x = new Array(n).fill(0);
+        for (let i = n - 1; i >= 0; i--) {
+            x[i] = b[i] / A[i][i];
+            for (let j = i - 1; j >= 0; j--) {
+                b[j] -= A[j][i] * x[i];
+            }
+        }
+        return x;
+    }
+</script>
+
+</body>
+</html>
