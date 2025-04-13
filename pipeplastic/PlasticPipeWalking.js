@@ -7,24 +7,29 @@ function setvalue(dict) {
     };
 }
 
-function resetWalking() {
+function resetInputs() {
     var defaultInputs = {
-        "A": 0.02,
-        "L": 5000,
-        "w": 1200,
-        "E": 207,//e9 GPa
-        "Alpha": 1.165e-5,
-        "pois": 0.3,
-        "t": 0.0206,
-        "r": 0.162,
-        "mu": 0.5,
-        "Theta": 2,//*math.pi/180 degree
-        "F_L": 100,//e3 kN
-        "F_R": 300,//e3 kN
-        "T_Inital": 20,
-        "T_End": 100,
-        "Internal_pressure": 30//e6 MPa
-    }
+		'theta': 2,
+		'mu': 0.5,
+		'nu': 0.3,
+		'delta_e': 0.1,
+		'alpha': 1.165,
+	    'T': 100,
+		'T_c': 0,
+		'w': 1200,
+		'L': 5000,
+		'E': 207,
+		'A': 0.02,
+		'Ft': 100000,
+		'Fb': 300000, 
+		'c1': -1.0079,
+		'c2': 0.5263,
+		'x_Ho': -509,
+		'x_Hi': -323,
+		'x1': -2500,
+		'x2': 0,
+		'x3': 2500
+	}    
     setvalue(defaultInputs);
     myChart.clear();
 }
@@ -81,69 +86,7 @@ function range(s,e) {
     var arr = Array(e-s+1).fill(0).map((_,index)=>s+index);
     return arr;
 }
-//=====================================
-function cool_LessThan_XC(mu,Theta,WW,E,A,L,Alfa,Delta_T,F_L,Eta,x,heat_cool_C){
-    let temp1=(mu*Math.cos(Theta)-Math.sin(Theta))*WW/2/E/A*(x/L)**2;
-    let temp2=(Alfa*Delta_T+F_L/E/A)*x/L;
-    let temp3=(mu*Math.cos(Theta)-Math.sin(Theta))/8*WW/E/A*(1+Eta)+0.5*(Alfa*Delta_T+F_L/E/A);
-    temp3=-(1+Eta)*temp3;
-    let y=(temp1+temp2+temp3)*L+heat_cool_C;
-    return y;
-}
-function cool_MoreThan_XC(mu,Theta,WW,E,A,L,Alfa,Delta_T,F_R,Eta,x,heat_cool_C){
-    let temp1=-(mu*Math.cos(Theta)+Math.sin(Theta))*WW/2/E/A*((L-x)/L)**2;
-    let temp2=-(Alfa*Delta_T+F_R/E/A)*(L-x)/L;
-    let temp3=(mu*Math.cos(Theta)+Math.sin(Theta))/8*WW/E/A*(1-Eta)+0.5*(Alfa*Delta_T+F_R/E/A);
-    temp3=temp3*(1-Eta);
-    y=(temp1+temp2+temp3)*L+heat_cool_C;
-    return y;
-}
 
-function heat_LessThan_XH(mu,Theta,WW,E,A,L,Alfa,Delta_T,F_L,Eta,x,heat_cool_H){
-    let temp1=-(mu*Math.cos(Theta)+Math.sin(Theta))*WW/2/E/A*(x/L)**2;
-    let temp2=(Alfa*Delta_T+F_L/E/A)*x/L;
-    let temp3=(mu*Math.cos(Theta)+Math.sin(Theta))/8*WW/E/A*(1-Eta)-0.5*(Alfa*Delta_T+F_L/E/A);
-    temp3=(1-Eta)*temp3;
-    y=(temp1+temp2+temp3)*L+heat_cool_H;
-    return y;
-}
-
-function heat_MoreThan_XH(mu,Theta,WW,E,A,L,Alfa,Delta_T,F_R,Eta,x,heat_cool_H){
-    let y=((mu*Math.cos(Theta)-Math.sin(Theta))*WW/2/E/A*((L-x)/L)**2-(Alfa*Delta_T+F_R/E/A)*(L-x)/L-(1+Eta)*((mu*Math.cos(Theta)-Math.sin(Theta))/8*WW/E/A*(1+Eta)-0.5*(Alfa*Delta_T+F_R/E/A)))*L+heat_cool_H;
-    return y;
-}
-
-function linspace2(x0,x1,x2,nSegments) {
-    var xx1=linspace(x0,x1,nSegments),
-    xx2=linspace(x1,x2,nSegments),
-    xx=xx1.concat(xx2);
-    return xx;
-}
-function N_LessThan_XH(mu,Theta,w,x,L,F_L,F_R) {
-  return -(mu*Math.cos(Theta)+Math.sin(Theta))*w*x+F_L;
-}
-function N_MoreThan_XH(mu,Theta,w,x,L,F_L,F_R) {
-  return (mu*Math.cos(Theta)-Math.sin(Theta))*w*(x-L)+F_R;
-}
-function N_LessThan_XC(mu,Theta,w,x,L,F_L,F_R) {
-  return (mu*Math.cos(Theta)-Math.sin(Theta))*w*x+F_L;
-}
-function N_MoreThan_XC(mu,Theta,w,x,L,F_L,F_R) {
-  return (mu*Math.cos(Theta)+Math.sin(Theta))*w*(L-x)+F_R;
-}
-
-function strain_LessThan_XH(Alpha,Delta_T,F_L,F_R,E,A,mu,Theta,WW,L,x) {
-  return Alpha*Delta_T+F_L/E/A-(mu*Math.cos(Theta)+Math.sin(Theta))*WW*x/E/A/L;
-}
-function strain_MoreThan_XH(Alpha,Delta_T,F_L,F_R,E,A,mu,Theta,WW,L,x) {
-  return Alpha*Delta_T+F_R/E/A-(mu*Math.cos(Theta)-Math.sin(Theta))*WW*(L-x)/E/A/L;
-}
-function strain_LessThan_XC(Alpha,Delta_T,F_L,F_R,E,A,mu,Theta,WW,L,x) {
-  return Alpha*Delta_T+F_L/E/A+(mu*Math.cos(Theta)-Math.sin(Theta))*WW*x/E/A/L;
-}
-function strain_MoreThan_XC(Alpha,Delta_T,F_L,F_R,E,A,mu,Theta,WW,L,x) {
-  return Alpha*Delta_T+F_R/E/A+(mu*Math.cos(Theta)+Math.sin(Theta))*WW*(L-x)/E/A/L;
-}
 // 修改过了，只保留了3个keypoints
 function keypoints_series(Cycle, keypoints, Name) {
   var Cycles = linspace(0,Cycle,Cycle*2+1);  
@@ -352,19 +295,23 @@ function calculateFirstPhase(){
 
     if (!converged) {
         const resultDiv = document.getElementById('first-phase-result');
-        resultDiv.innerHTML = `
+        if(resultDiv){
+			resultDiv.innerHTML = `
             <h2 style="color: red">计算未收敛</h2>
             <pre>经过 ${max_iter} 次迭代仍未达到收敛条件\n请尝试:
             1. 增加最大迭代次数
             2. 调整初始猜测值
             3. 检查输入参数合理性
             </pre> `;
-            firstPhaseConverged = false;
-            const secondPhaseResultDiv = document.getElementById('second-phase-result');
+         }
+        firstPhaseConverged = false;
+        const secondPhaseResultDiv = document.getElementById('second-phase-result');
+        if(secondPhaseResultDiv){
             secondPhaseResultDiv.innerHTML = `
                 <h2 style="color: red">警告</h2>
                 <pre>第一阶段计算结果未收敛，无法进行第二阶段计算！</pre>`;
-        return;
+			return;
+        }
     }
 
     firstPhaseConverged = true; 

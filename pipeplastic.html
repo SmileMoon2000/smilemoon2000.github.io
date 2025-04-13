@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="assets/css/Footer-Basic-icons.css">
 </head>
 
-<body class="is-preload" style="background-color:snow;" onload="resetWalking()">
+<body class="is-preload" style="background-color:snow;" onload="">
     <div id="wrapper">
         <div id="main">
             <div class="inner">
@@ -38,108 +38,128 @@
                                         <h4>基本参数</h4>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">海床倾角(theta)</span></div>
-                                            <input class="form-control" type="number" id="theta" value="2">
+                                            <input class="form-control" type="number" id="theta" value="2" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">°</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">摩擦系数(Mu)</span></div>
-                                            <input class="form-control" type="number" id="mu" value="0.5">
+                                            <input class="form-control" type="number" id="mu" value="0.5" max="Infinity"
+                                                min="-1e+256" step="0.1">
                                             <div class="input-group-append"><span class="input-group-text"></span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">泊松比(nu)</span></div>
-                                            <input class="form-control" type="number" id="nu" value="0.3">
+                                            <input class="form-control" type="number" id="nu" value="0.3" max="Infinity"
+                                                min="-1e+256" step="0.1">
                                             <div class="input-group-append"><span class="input-group-text"></span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text"> 弹性滑移(Delta_e)</span></div>
-                                            <input class="form-control" type="number" id="delta_e" value="0.1">
+                                            <input class="form-control" type="number" id="delta_e" value="0.1" max="Infinity"
+                                                min="-1e+256" step="0.1">
                                             <div class="input-group-append"><span class="input-group-text">m</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">膨胀系数 (Alpha)</span></div>
-                                            <input class="form-control" type="number" id="alpha" value="1.165">
+                                            <input class="form-control" type="number" id="alpha" value="1.165" max="Infinity"
+                                                min="-1e+256" step="0.001">
                                             <div class="input-group-append"><span class="input-group-text">10<sup>-5</sup>/℃</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">加热温度(T)</span></div>
-                                            <input class="form-control" type="number" id="T" value="100">
+                                            <input class="form-control" type="number" id="T" value="100" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">℃</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">冷却温度(T_c )</span></div>
-                                            <input class="form-control" type="number" id="T_c" value="0">
+                                            <input class="form-control" type="number" id="T_c" value="0" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">℃</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">管道重量(W)</span></div>
-                                            <input class="form-control" type="number" id="w" value="1200">
+                                            <input class="form-control" type="number" id="w" value="1200" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">N/m</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">管道长度(L)</span></div>
-                                            <input class="form-control" type="number" id="L" value="5000">
+                                            <input class="form-control" type="number" id="L" value="5000" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">m</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">弹性模量(E)</span></div>
-                                            <input class="form-control" type="number" id="E" value="207">
+                                            <input class="form-control" type="number" id="E" value="207" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">GP<sub>a</sub></sub></span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">管道截面面积(A)</span></div>
-                                            <input class="form-control" type="number" id="A" value="0.02">
+                                            <input class="form-control" type="number" id="A" value="0.02" max="Infinity"
+                                                min="-1e+256" step="0.01">
                                             <div class="input-group-append"><span class="input-group-text">m<sup>2</sup></span></div>
                                         </div>
                             
                                         <h4>管端力(远离管道截面为正，单位： N)</h4>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">管端左张力(Ft)</span></div>
-                                            <input class="form-control" type="number" id="Ft" value="100000">
+                                            <input class="form-control" type="number" id="Ft" value="100000" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">N</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">管端右张力(Fb)</span></div>
-                                            <input class="form-control" type="number" id="Fb" value="300000">
+                                            <input class="form-control" type="number" id="Fb" value="300000" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">N</span></div>
                                         </div>
                             
                                         <h4>初始解</h4>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">c1</span></div>
-                                            <input class="form-control" type="number" id="c1" value="-1.0079">
+                                            <input class="form-control" type="number" id="c1" value="-1.0079" max="Infinity"
+                                                min="-1e+256" step="0.0001">
                                             <div class="input-group-append"><span class="input-group-text"></span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">c2</span></div>
-                                            <input class="form-control" type="number" id="c2" value="0.5263">
+                                            <input class="form-control" type="number" id="c2" value="0.5263" max="Infinity"
+                                                min="-1e+256" step="0.0001">
                                             <div class="input-group-append"><span class="input-group-text"></span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">x_Ho</span></div>
-                                            <input class="form-control" type="number" id="x_Ho" value="-509">
+                                            <input class="form-control" type="number" id="x_Ho" value="-509" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">m</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">x_Hi</span></div>
-                                            <input class="form-control" type="number" id="x_Hi" value="-323">
+                                            <input class="form-control" type="number" id="x_Hi" value="-323" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">m</span></div>
                                         </div>
                             
                                         <h4>位移参数(管道中点为坐标原点，单位: m)</h4>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">管道左端点(x1)</span></div>
-                                            <input class="form-control" type="number" id="x1" value="-2500">
+                                            <input class="form-control" type="number" id="x1" value="-2500" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">m</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">管道中点(x2)</span></div>
-                                            <input class="form-control" type="number" id="x2" value="0">
+                                            <input class="form-control" type="number" id="x2" value="0" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">m</span></div>
                                         </div>
                                         <div class="input-group was-validated">
                                             <div class="input-group-prepend"><span class="input-group-text">管道右端点(x3)</span></div>
-                                            <input class="form-control" type="number" id="x3" value="2500">
+                                            <input class="form-control" type="number" id="x3" value="2500" max="Infinity"
+                                                min="-1e+256" step="1">
                                             <div class="input-group-append"><span class="input-group-text">m</span></div>
                                         </div>
                             
@@ -245,7 +265,7 @@
     <!-- <script src="assets/plotly/plotly.min.js"></script> -->
     <script src="/pipewalking/math.min.js"> </script>
     <script src="assets/echart/echarts.min.js"></script>
-    <script src="/pipeplastic/PlasticPipeWalking.min.js"> </script>
+    <script src="/pipeplastic/PlasticPipeWalking.js"> </script>
     <script async>
         $("#header").load("parts/header.html");
         $("#sidebar").load("parts/sidebar.html");
